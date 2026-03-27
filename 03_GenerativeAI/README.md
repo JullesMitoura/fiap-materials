@@ -51,7 +51,7 @@ Módulo prático de Inteligência Artificial Generativa. Os notebooks percorrem 
 ├── genai_aula3_3_models_transformer.ipynb          # Aula 3c — Fine-tuning de DistilBERT
 ├── genai_aula3_4_models_evaluate.ipynb             # Aula 3d — Avaliação comparativa dos três modelos
 ├── genai_aula4_lora_vision.ipynb                   # Aula 4  — LoRA para Visão (ViT + Beans dataset)
-├── genai_aula5_embedding.ipynb                     # Aula 5  — Modelos de Embedding
+├── genai_aula5_qlora_gpt2.ipynb                    # Aula 5  — QLoRA com GPT-2 (quantização NF4 + LoRA)
 ├── genai_aula6_llm_api_call.ipynb                  # Aula 6  — Consumo de LLMs via API
 ├── requirements.txt
 ├── .env.example                                    # OPENAI_API_KEY (não versionar)
@@ -197,22 +197,26 @@ Demonstra fine-tuning eficiente de um Vision Transformer (ViT) usando LoRA — a
 
 ---
 
-## Aula 5 — Modelos de Embedding
+## Aula 5 — QLoRA com GPT-2
 
-### `genai_aula5_embedding.ipynb`
+### `genai_aula5_qlora_gpt2.ipynb`
 
-Explora o que são tokens e embeddings — os blocos fundamentais de qualquer modelo de linguagem — e demonstra como utilizá-los na prática.
+Apresenta o **QLoRA** (*Quantized LoRA*) — a técnica que viabiliza o fine-tuning de LLMs em hardware limitado ao combinar quantização NF4 4-bit com adaptadores LoRA de rank baixo. Fine-tuning do GPT-2 para análise de sentimentos em avaliações de filmes.
 
 **O que é abordado:**
-- **Tokens:** unidades atômicas de texto; tokenização BPE e WordPiece com prefixo `##` para subtokens
-- **Embeddings:** representações vetoriais densas; por que evitar one-hot encoding em vocabulários grandes
-- **Similaridade de cosseno:** medida de proximidade semântica no espaço vetorial
-- **Redução de dimensionalidade:** PCA e t-SNE para visualização de clusters semânticos
-- **Pesos congelados vs. treináveis:** `requires_grad=False` para transfer learning eficiente
-- Construção de um modelo de embedding customizado com `torch.nn`
-- Aplicações práticas: busca semântica, clustering, sistemas de recomendação
+- **Por que PEFT:** custo de memória do full fine-tuning (pesos + gradientes + Adam states) — de GPT-2 a Llama-3-70B
+- **LoRA:** fatorização de baixo rank $\Delta W = BA$; por que apenas ~0,x% dos parâmetros precisam ser treinados
+- **Quantização:** escada FP32 → FP16 → INT8 → NF4; NF4 vs INT4 (bins não-uniformes calibrados para distribuição normal); double quantization
+- **QLoRA:** modelo base congelado em NF4 4-bit + adaptadores LoRA em FP16 treináveis
+- **GPT-2:** arquitetura decoder-only; módulos `c_attn` (QKV fusionados) e `c_proj` como targets LoRA
+- Dataset de avaliações de filmes (`dataset.csv`) formatado como causal LM: `Review: [...]\nSentiment: [label]`
+- `BitsAndBytesConfig` com NF4 (CUDA) e fallback FP32 automático para CPU/MPS
+- `LoraConfig` + `get_peft_model` + `DataCollatorForLanguageModeling(mlm=False)`
+- Comparação base GPT-2 vs fine-tuned; salvamento do adaptador (~1–5 MB vs ~500 MB do modelo completo)
 
-**Bibliotecas:** `transformers`, `torch`, `scikit-learn`, `numpy`, `matplotlib`, `seaborn`
+**Bibliotecas:** `transformers`, `peft`, `datasets`, `torch`, `pandas`, `matplotlib`, `seaborn`
+
+> Requer `bitsandbytes` para quantização NF4 (CUDA). Em CPU/MPS o notebook executa com LoRA em FP32.
 
 ---
 
@@ -261,24 +265,75 @@ pip install -r requirements.txt
 python -m spacy download pt_core_news_sm   # modelo spaCy em português
 ```
 
-Crie um arquivo `.env` na raiz com sua chave de API (necessário apenas para a Aula 6):
+Crie um arquivo `.env` na raiz com sua chave de API (necessário para as Aulas 2 e 6):
 
 ```
 OPENAI_API_KEY=sk-...
 ```
 
-| Biblioteca | Uso |
+---
+
+## Bibliotecas por Aula
+
+### `torch` — PyTorch
+
+| Aulas | Papel |
 |---|---|
-| `torch` | Framework principal de deep learning (Aulas 1, 2, 3c, 4, 5) |
-| `tensorflow` | Treino de BiLSTM e FCNN (Aulas 3a, 3b, 3d) |
-| `transformers` | DistilBERT, ViT, embeddings HuggingFace (Aulas 3c, 4, 5) |
-| `peft` | LoRA e fine-tuning eficiente (Aula 4) |
-| `datasets` | Carregamento de datasets HuggingFace (Aulas 3c, 4) |
-| `spacy` | Pré-processamento NLP em português (Aulas 3a, 3b, 3d) |
-| `scikit-learn` | Métricas, TF-IDF, normalização (Aulas 3, 4, 5) |
-| `openai` | Chat Completions API (Aula 6) |
-| `python-dotenv` | Gestão de variáveis de ambiente (Aula 6) |
-| `numpy`, `matplotlib`, `seaborn`, `pandas` | Álgebra, visualização e manipulação de dados |
+| 1a, 1b | Arquitetura completa: `nn.Module`, `nn.Embedding`, `nn.MultiheadAttention`, `nn.Linear`, `AdamW`, `DataLoader`. Avaliação com perplexidade, acurácia top-1/top-5 e salvamento de checkpoint |
+| 3c, 3d | Base de inferência para DistilBERT via HuggingFace |
+| 4 | Backend do ViT; detecção de device (CUDA/MPS/CPU) |
+| 5 | Backend do GPT-2; `BitsAndBytesConfig`; geração de texto com `.generate()` |
+
+### `tensorflow` / `tf_keras`
+
+Usado nas Aulas 3a, 3b e 3d. Constrói e treina os modelos BiLSTM e FCNN via `tensorflow.keras`: camadas `Embedding`, `Bidirectional(LSTM)`, `Dense`, `Dropout`, `EarlyStopping`, `Tokenizer`, `pad_sequences`. `tf_keras` é um pacote standalone de compatibilidade exigido pelo TF em alguns ambientes.
+
+### `transformers` — HuggingFace
+
+| Aula | Componentes |
+|---|---|
+| 3c | `AutoTokenizer`, `AutoModelForSequenceClassification`, `TrainingArguments`, `Trainer`, `DataCollatorWithPadding` |
+| 4 | `AutoImageProcessor`, `ViTForImageClassification` |
+| 5 | `AutoTokenizer`, `AutoModelForCausalLM`, `BitsAndBytesConfig`, `DataCollatorForLanguageModeling` |
+
+### `peft` — Parameter-Efficient Fine-Tuning
+
+Usado nas Aulas 4 e 5. `LoraConfig` define rank `r`, `lora_alpha` (escala = α/r), `target_modules` e `lora_dropout`. `get_peft_model` congela os pesos base e injeta as matrizes A e B treináveis. Em vez de atualizar $W$, aprende $\Delta W = B \cdot A$ com $r \ll \min(d,k)$ — redução de dezenas de vezes no número de parâmetros treináveis. `prepare_model_for_kbit_training` ativa gradient checkpointing quando combinado com bitsandbytes (Aula 5).
+
+### `bitsandbytes`
+
+Usado na Aula 5 (**requer CUDA**). Viabiliza o QLoRA carregando os pesos do modelo em NF4 4-bit: `load_in_4bit=True`, `bnb_4bit_quant_type="nf4"`, `bnb_4bit_compute_dtype=torch.float16`, `bnb_4bit_use_double_quant=True`. Os pesos são dequantizados para FP16 no forward pass. Em CPU/MPS o notebook cai automaticamente para FP32.
+
+### `datasets` — HuggingFace
+
+Usado nas Aulas 3c, 4 e 5. Converte DataFrames pandas em objetos `Dataset` para integração com `Trainer`/`SFTTrainer`. Suporta `map()` em batch, caching e `train_test_split`. Na Aula 4 carrega o dataset Beans diretamente do HuggingFace Hub (`load_dataset("beans")`).
+
+### `numpy`
+
+Backbone da Aula 2: implementa toda a arquitetura Transformer manualmente — embedding como indexação de matriz, `softmax` com estabilidade numérica, `scaled_dot_product_attention` (`np.dot(Q, K.T) / sqrt(dk)`), projeção linear e `np.argmax`. Presente como utilitário numérico em todas as demais aulas.
+
+### `scikit-learn`
+
+Usado nas Aulas 3 e 4. Fornece `train_test_split`, `LabelEncoder`, `TfidfVectorizer` (11.504 features, Aula 3b), `compute_class_weight` e métricas unificadas: `classification_report`, `confusion_matrix`, `f1_score`, `accuracy_score`.
+
+### `spacy`
+
+Usado nas Aulas 3a, 3b e 3d. Pipeline de pré-processamento de texto: tokenização, remoção de stopwords e lematização antes de alimentar BiLSTM e FCNN. O mesmo pipeline é reaplicado na Aula 3d para garantir consistência na avaliação comparativa.
+
+### `openai`
+
+| Aula | Uso |
+|---|---|
+| 2 | `client.embeddings.create(model="text-embedding-3-small")` — substitui embeddings aleatórios por vetores semânticos reais para o classificador |
+| 6 | `client.chat.completions.create` — Chat Completions com controle de `temperature`, `top_p`, `frequency_penalty`, `presence_penalty`, `stop`, `n`, streaming e saída estruturada JSON |
+
+### `python-dotenv`
+
+Usado nas Aulas 2 e 6. `load_dotenv(override=True)` carrega `OPENAI_API_KEY` do arquivo `.env` sem expor credenciais no código.
+
+### `matplotlib` / `seaborn` / `pandas`
+
+Presentes em todos os notebooks. `matplotlib` plota curvas de loss, distribuições e comparações. `seaborn` gera heatmaps para matrizes de confusão. `pandas` realiza leitura de CSV, exploração e filtragem dos datasets.
 
 ---
 
@@ -293,6 +348,7 @@ Cada aula possui um arquivo de suporte detalhando a função de cada biblioteca 
 | `suporte/genai_aula2_mecanismo_atencao_qkv.md` | Detalhamento matemático de Q, K e V |
 | `suporte/genai_aula3_libs.md` | Aulas 3a, 3b, 3c e 3d |
 | `suporte/genai_aula4_libs.md` | Aula 4 |
+| `suporte/genai_aula5_libs.md` | Aula 5 |
 | `suporte/genai_aula6_libs.md` | Aula 6 |
 
 ---
@@ -308,7 +364,7 @@ Aula 3  →  NLP aplicado: BiLSTM → FCNN+TF-IDF → DistilBERT fine-tuning →
    ↓
 Aula 4  →  LoRA: fine-tuning eficiente de Vision Transformer em imagens
    ↓
-Aula 5  →  Embeddings: tokens, vetores semânticos, similaridade e visualização
+Aula 5  →  QLoRA: quantização NF4 + LoRA para fine-tuning de GPT-2 em texto
    ↓
 Aula 6  →  Consumo de LLMs em produção: parâmetros, boas práticas, OpenAI API
 ```
