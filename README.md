@@ -6,18 +6,9 @@
      alt="Python"
      width="48"
      height="48"/>
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jupyter/jupyter-original.svg"
-     alt="Jupyter"
-     width="48"
-     height="48"/>
-<img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"
-     alt="HuggingFace"
-     width="48"
-     height="48"/>
+
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
-![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
-![HuggingFace](https://img.shields.io/badge/HuggingFace-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
 
 <img width="80%" src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"/>
 
