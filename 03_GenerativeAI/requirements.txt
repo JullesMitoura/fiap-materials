@@ -12,3 +12,5 @@ tf_keras==2.19.0
 datasets==4.7.0
 peft==0.14.0 
 evaluate==0.4.6
+pypdf
+faiss-cpu
