@@ -29,7 +29,7 @@
 # Redes Neurais Artificiais, Deep Learning e Algoritmos Genéticos
 > PhD. Julles Mitoura
 
-Módulo prático que conduz o aluno desde os fundamentos matemáticos de uma rede neural até a implementação com PyTorch — construindo cada componente do zero antes de utilizar frameworks, para que a abstração faça sentido.
+Módulo prático que conduz o aluno desde os fundamentos matemáticos de uma rede neural até a implementação com PyTorch  construindo cada componente do zero antes de utilizar frameworks, para que a abstração faça sentido.
 
 ---
 
@@ -40,7 +40,7 @@ Módulo prático que conduz o aluno desde os fundamentos matemáticos de uma red
 | 00 | [aula0_redes_neurais.ipynb](./aula0_redes_neurais.ipynb) | Regressão Linear com Gradiente Descendente | Forward pass, MSE, backpropagation manual, loop de treino com NumPy |
 | 01 | [aula1_redes_neurais.ipynb](./aula1_redes_neurais.ipynb) | O que é uma Rede Neural? | Neurônio artificial, redes multicamada do zero, normalização Z-score, aplicação em regressão real |
 | 03 | [aula3_redes_neurais_fnn.ipynb](./aula3_redes_neurais_fnn.ipynb) | Fully Connected NN com PyTorch | `nn.Module`, autograd, Adam, regressão com CSV real e classificação multiclasse (bullseye) |
-| EDA | [aula_analise_exploratoria.ipynb](./aula_analise_exploratoria.ipynb) | Análise Exploratória — Sensor Industrial | Inspeção do dataset `deltaP.csv`: gaps, outliers, distribuições, sazonalidade, correlação e motivação para RNN/LSTM |
+| EDA | [aula_analise_exploratoria.ipynb](./aula_analise_exploratoria.ipynb) | Análise Exploratória  Sensor Industrial | Inspeção do dataset `deltaP.csv`: gaps, outliers, distribuições, sazonalidade, correlação e motivação para RNN/LSTM |
 | 04 | [aula4_redes_neurais_rnn.ipynb](./aula4_redes_neurais_rnn.ipynb) | RNN com PyTorch | `nn.RNN`, estado oculto, BPTT, clipping de gradiente, previsão de série temporal e classificação de sequências |
 | 05 | [aula5_redes_neurais_lstm.ipynb](./aula5_redes_neurais_lstm.ipynb) | LSTM com PyTorch | Gates, estado de célula, janela deslizante, previsão de série temporal e classificação de sequências |
 
@@ -68,7 +68,7 @@ A progressão é intencional: você implementa tudo manualmente antes de usar o 
 | 01 | Sintético + CSV | Dataset gerado e `data/regression_example.csv` (400 amostras, 4 features) |
 | 03 | CSV + Sintético | `data/regression_example.csv` para regressão; bullseye sintético (3 classes por faixa de raio) para classificação |
 | 04 | Sintético | Série temporal $\sin(t) + 0.5\sin(3t) + \varepsilon$ para regressão; sequências senoidais, lineares e ruído para classificação |
-| 05 | Sintético | Mesmos datasets da Aula 04 — comparação direta entre RNN e LSTM |
+| 05 | Sintético | Mesmos datasets da Aula 04  comparação direta entre RNN e LSTM |
 
 ---
 
@@ -84,7 +84,7 @@ pip install -r requirements.txt
 | `matplotlib` | 3.5.0 | Visualizações e gráficos |
 | `pandas` | 1.3.0 | Leitura de CSV (aulas 01 e 03) |
 | `scikit-learn` | 1.0 | Normalização com `StandardScaler` (aula 04) |
-| `torch` | — | Framework de deep learning (aulas 03, 04 e 05) |
+| `torch` |  | Framework de deep learning (aulas 03, 04 e 05) |
 
 ---
 
