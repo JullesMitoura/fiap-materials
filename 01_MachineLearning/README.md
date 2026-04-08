@@ -67,14 +67,6 @@ O módulo é intencionalmente autocontido: antes de qualquer framework ou rede n
 
 ---
 
-## Material de Suporte
-
-| Arquivo | Descrição |
-|---------|-----------|
-| [`suporte/aula0_min_sse.md`](./suporte/aula0_min_sse.md) | Derivação completa da equação normal: do SSE matricial à solução β = (XᵀX)⁻¹Xᵀy |
-
----
-
 ## Pré-requisitos
 
 ```bash
