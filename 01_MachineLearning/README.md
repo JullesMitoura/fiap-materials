@@ -38,16 +38,20 @@ Módulo introdutório que conduz o aluno dos fundamentos matemáticos de aprendi
 
 | Aula | Notebook | Tema | Conteúdo Principal |
 |------|----------|------|--------------------|
-| 00 | [aula0_machine_learning.ipynb](./aula0_machine_learning.ipynb) | Regressão Linear e Minimização do SSE | Equação normal, derivação matricial de β, gradiente descendente, aplicação em dados reais de trocador de calor |
+| 00 | [aula0_machine_learning.ipynb](./aula0_machine_learning.ipynb) | Regressão Linear — Método do Triângulo | Equação da reta, coeficientes β₀ e β₁ por relação de triângulos, previsão em dataset real de trocador de calor |
+| 01 | [aula1_machine_learning.ipynb](./aula1_machine_learning.ipynb) | Gradiente Descendente | Função de perda (MSE), derivadas parciais, implementação do algoritmo com NumPy, efeito da taxa de aprendizado |
+| 02 | [aula2_machine_learning.ipynb](./aula2_machine_learning.ipynb) | Gradiente Descendente Aplicado | Aplicação ao trocador de calor, normalização de entrada, comparação triângulo vs. gradiente descendente |
+| 03 | [aula3_machine_learning.ipynb](./aula3_machine_learning.ipynb) | Regressão Polinomial | Expansão de features, matriz de design Φ, gradiente vetorizado, escolha interativa do grau (1º, 2º ou 3º) |
 
 ---
 
 ## Progressão Pedagógica
 
 ```
-Aula 00 → Modelagem supervisionada: da função de custo (SSE) à solução fechada (equação normal)
-          → Implementação manual com NumPy: sem frameworks, sem abstrações
-          → Validação em dataset real de engenharia
+Aula 00 → Reta ajustada manualmente (dois pontos): intuição geométrica, sem otimização
+Aula 01 → Gradiente descendente: função de custo, derivadas, implementação pura NumPy
+Aula 02 → Aplicação ao problema real: normalização, comparação de métodos, previsão
+Aula 03 → Generalização polinomial: matriz de design, gradiente vetorizado, seleção de grau
 ```
 
 O módulo é intencionalmente autocontido: antes de qualquer framework ou rede neural, o aluno implementa o ciclo completo de aprendizado — definição do modelo, função de custo, otimização e avaliação.
@@ -58,7 +62,8 @@ O módulo é intencionalmente autocontido: antes de qualquer framework ou rede n
 
 | Aula | Dataset | Descrição |
 |------|---------|-----------|
-| 00 | `data/heat_exchanger.csv` | Dados reais de trocador de calor (engenharia) para regressão supervisionada |
+| 00, 01, 02 | `data/heat_exchanger.csv` | Dados reais de trocador de calor (engenharia): eficiência térmica diária ao longo de 6 meses |
+| 03 | Sintético (gerado no notebook) | Polinômio cúbico com ruído gaussiano — sem arquivo externo |
 
 ---
 
@@ -80,7 +85,7 @@ pip install -r requirements.txt
 |------------|--------------|-----|
 | `numpy` | 1.20.0 | Álgebra linear, operações matriciais, gradiente descendente |
 | `matplotlib` | 3.5.0 | Visualizações e gráficos de regressão |
-| `pandas` | 1.3.0 | Leitura e manipulação do dataset CSV |
+| `pandas` | 1.3.0 | Leitura do dataset CSV e exibição de resultados |
 
 ---
 
