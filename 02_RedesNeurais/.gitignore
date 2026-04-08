@@ -1,6 +1,9 @@
 .venv
 .env
 .claude
+data/mnist
+data/har
+data/cifar10
 .data/mnist
 .data/har
 .data/cifar10
